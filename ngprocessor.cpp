@@ -85,8 +85,27 @@ tresult PLUGIN_API NaiveGranularProcessor::process (Vst::ProcessData& data)
 		}
 	}*/
 	
-	//--- Here you have to implement your processing
+	int numSamples = data.numSamples;
+	Vst::Sample32* outLeft = data.outputs[0].channelBuffers32[0];
+	Vst::Sample32* outRight = data.outputs[0].channelBuffers32[1];
 
+	int wavePosition = 0;
+	for (int n = 0; n < numSamples; n++)	// ignoring state maintenance between calls of this method
+	{
+		wavePosition = n % 100;
+		if (wavePosition < 50)
+		{
+			outLeft[n] = -0.25f + 0.01f * wavePosition;	// set rising values
+		}
+		else
+		{
+			outLeft[n] = 0.75f - 0.01f * wavePosition;	// set falling values
+		}
+
+		outRight[n] = outLeft[n];	// copy value to other channel
+		
+	}
+	
 	return kResultOk;
 }
 
